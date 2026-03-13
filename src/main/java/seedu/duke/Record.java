@@ -6,4 +6,9 @@ public class Record {
     public Record(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return description;   // or whatever field holds the text
+    }
 }

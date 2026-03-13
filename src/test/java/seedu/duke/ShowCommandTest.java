@@ -1,0 +1,27 @@
+package seedu.duke;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+public class ShowCommandTest {
+
+    @Test
+    void printRecord_validIndex_printsCorrectRecord() {
+
+        RecordList records = new RecordList();
+        records.add(new Record("Test Record"));
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(output));
+
+        ShowCommand.printRecord(records, 0);
+
+        System.setOut(originalOut);
+
+        assertEquals(records.getRecord(0) + System.lineSeparator(), output.toString());
+    }
+}

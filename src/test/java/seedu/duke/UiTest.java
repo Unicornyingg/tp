@@ -55,7 +55,6 @@ public class UiTest {
         Ui ui = new Ui();
 
         String command = ui.readCommand();
-
         assertEquals("bye", command);
     }
 }

@@ -59,13 +59,14 @@ public class FindCommandTest {
         FindCommand findCommand = new FindCommand("java");
         findCommand.execute(recordList);
 
+        String dashedLine = "--------------------";
         String lineSeparator = System.lineSeparator();
         String expectedOutput =
-                "--------------------" + lineSeparator
+                dashedLine + lineSeparator
                 + "Matching records:" + lineSeparator
                 + "1. Java project" + lineSeparator
                 + "2. Full stack Java app" + lineSeparator
-                + "--------------------" + lineSeparator;
+                + dashedLine + lineSeparator;
 
         assertEquals(expectedOutput, outputStream.toString());
     }

@@ -1,5 +1,7 @@
 package seedu.duke;
 
+import seedu.duke.recordtype.Record;
+
 public class ShowCommand extends Command{
     int index;
     public ShowCommand(int index){

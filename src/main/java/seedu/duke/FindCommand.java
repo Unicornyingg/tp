@@ -4,12 +4,23 @@ import seedu.duke.recordtype.Record;
 
 import java.util.logging.Logger;
 
+/**
+ * Represents a command that searches for records containing a given keyword.
+ * The search is performed across all records in the RecordList.
+ * Matching records are printed to the user.
+ */
 public class FindCommand extends Command {
     private static final Logger logger = Logger.getLogger(FindCommand.class.getName());
 
     private final String keyword;
     private final Ui ui;
 
+    /**
+     * Creates a FindCommand with the specified keyword.
+     *
+     * @param keyword The keyword used to search for matching records.
+     * @throws IllegalArgumentException if the keyword is null or blank.
+     */
     public FindCommand(String keyword) {
         if (keyword == null) {
             throw new IllegalArgumentException("Keyword cannot be null");
@@ -33,6 +44,12 @@ public class FindCommand extends Command {
         return keyword;
     }
 
+    /**
+     * Executes the find operation by searching for records that contain
+     * the specified keyword and printing the results.
+     *
+     * @param list The RecordList to search from.
+     */
     @Override
     public void execute(RecordList list) {
         logger.info("Executing FindCommand with keyword: " + keyword);

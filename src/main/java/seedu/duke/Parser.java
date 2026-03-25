@@ -13,6 +13,7 @@ import seedu.duke.Commands.ExitCommand;
 import seedu.duke.Commands.FindCommand;
 import seedu.duke.Commands.ListCommand;
 import seedu.duke.Commands.ShowCommand;
+import seedu.duke.Commands.EditCommand;
 import seedu.duke.recordtype.Cca;
 import seedu.duke.recordtype.Experience;
 import seedu.duke.recordtype.Project;
@@ -118,6 +119,22 @@ public class Parser {
             }catch (NumberFormatException e) {
                 return null;
             }
+
+            case "edit":
+                if (split.length < 2) {
+                    return null;
+                }
+                String[] editParts = split[1].split("\\s+", 2);
+                if (editParts.length < 2) {
+                    return null;
+                }
+                try {
+                    int index = Integer.parseInt(editParts[0]) - 1;
+                    String newDescription = editParts[1].trim();
+                    return new EditCommand(index, newDescription);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
 
         default:
             logger.warning("Unknown command: " + keyword);

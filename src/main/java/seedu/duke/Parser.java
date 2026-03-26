@@ -24,6 +24,69 @@ public class Parser {
 
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
 
+    private static Command parseEditCommand(String args) {
+        String trimmedArgs = args.trim();
+        String[] editParts = trimmedArgs.split("\\s+", 2);
+
+        if (editParts.length < 2) {
+            return null;
+        }
+
+        try {
+            int index = Integer.parseInt(editParts[0]) - 1;
+            String fields = editParts[1].trim();
+
+            int fromIndex = fields.indexOf("/from");
+            int toIndex = fields.indexOf("/to");
+
+            String newDescription = null;
+            YearMonth newFrom = null;
+            YearMonth newTo = null;
+
+            int firstFlagIndex = -1;
+            if (fromIndex != -1 && toIndex != -1) {
+                firstFlagIndex = Math.min(fromIndex, toIndex);
+            } else if (fromIndex != -1) {
+                firstFlagIndex = fromIndex;
+            } else if (toIndex != -1) {
+                firstFlagIndex = toIndex;
+            }
+
+            if (firstFlagIndex == -1) {
+                newDescription = fields.trim();
+            } else {
+                String titlePart = fields.substring(0, firstFlagIndex).trim();
+                if (!titlePart.isEmpty()) {
+                    newDescription = titlePart;
+                }
+            }
+
+            if (fromIndex != -1 && toIndex != -1) {
+                if (fromIndex < toIndex) {
+                    String fromPart = fields.substring(fromIndex + 5, toIndex).trim();
+                    String toPart = fields.substring(toIndex + 3).trim();
+                    newFrom = parseYearMonth(fromPart, "from");
+                    newTo = parseYearMonth(toPart, "to");
+                } else {
+                    String toPart = fields.substring(toIndex + 3, fromIndex).trim();
+                    String fromPart = fields.substring(fromIndex + 5).trim();
+                    newTo = parseYearMonth(toPart, "to");
+                    newFrom = parseYearMonth(fromPart, "from");
+                }
+            } else if (fromIndex != -1) {
+                String fromPart = fields.substring(fromIndex + 5).trim();
+                newFrom = parseYearMonth(fromPart, "from");
+            } else if (toIndex != -1) {
+                String toPart = fields.substring(toIndex + 3).trim();
+                newTo = parseYearMonth(toPart, "to");
+            }
+
+            return new EditCommand(index, newDescription, newFrom, newTo);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public static Command parse(String userInput) {
         logger.info("Parsing input: " + userInput);
 
@@ -125,17 +188,7 @@ public class Parser {
                 if (split.length < 2) {
                     return null;
                 }
-                String[] editParts = split[1].split("\\s+", 2);
-                if (editParts.length < 2) {
-                    return null;
-                }
-                try {
-                    int index = Integer.parseInt(editParts[0]) - 1;
-                    String newDescription = editParts[1].trim();
-                    return new EditCommand(index, newDescription);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
+                return parseEditCommand(split[1]);
 
         case "movebullet":
             if (split.length < 2) {
@@ -224,7 +277,7 @@ public class Parser {
         try {
             return YearMonth.parse(input.trim());
         } catch (DateTimeException e) {
-            throw new IllegalArgumentException(fieldName + "date Must be in yyyy-MM format");
+            throw new IllegalArgumentException(fieldName + "date must be in yyyy-MM format");
         }
     }
 }

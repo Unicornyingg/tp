@@ -59,7 +59,30 @@ public class Record {
     }
 
     public void setDescription(String description) {
-        this.title = description;
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Title cannot be blank.");
+        }
+        this.title = description.trim();
+    }
+
+    public void setFrom(YearMonth from) {
+        if (from == null) {
+            throw new IllegalArgumentException("Start date cannot be null.");
+        }
+        if (this.to != null && from.isAfter(this.to)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        this.from = from;
+    }
+
+    public void setTo(YearMonth to) {
+        if (to == null) {
+            throw new IllegalArgumentException("End date cannot be null.");
+        }
+        if (this.from != null && to.isBefore(this.from)) {
+            throw new IllegalArgumentException("End date cannot be before start date.");
+        }
+        this.to = to;
     }
 
     public String getRecordType() {

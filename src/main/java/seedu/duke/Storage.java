@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class Storage {
     private static final Logger logger = Logger.getLogger(Storage.class.getName());
     private static final String filepath = "records.txt";
+    private final Ui ui = new Ui();
 
     public void saveToFile(RecordList list) throws IOException {
         logger.info("Saving records to file: " + filepath);
@@ -50,7 +51,7 @@ public class Storage {
                     + " /to " + record.getTo() + "\n");
         }
         logger.info("Records saved successfully");
-        System.out.println("Records saved to file.");
+        ui.showMessage("Records saved to file.");
         fw.close();
     }
 
@@ -68,7 +69,7 @@ public class Storage {
                 logger.fine("Created storage directory: " + directory);
             } catch (IOException e) {
                 logger.severe("Error creating the directory: " + e.getMessage());
-                System.out.println("Error creating the directory.");
+                ui.showError("Error creating the directory.");
                 return list;
             }
         }
@@ -79,7 +80,7 @@ public class Storage {
                 logger.fine("Created storage file: " + filepath);
             } catch (IOException e) {
                 logger.severe("Error creating the file: " + e.getMessage());
-                System.out.println("Error creating the file.");
+                ui.showError("Error creating the file.");
                 return list;
             }
         }
@@ -107,7 +108,7 @@ public class Storage {
         }
         sc.close();
         logger.info("Records loaded successfully");
-        System.out.println("Loaded records from file.");
+        ui.showMessage("Loaded records from file.");
 
         return list;
     }

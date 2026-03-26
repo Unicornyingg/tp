@@ -12,11 +12,14 @@
 ## Product scope
 ### Target user profile
 
-{Describe the target user profile}
+Resumake targets students in universities who are looking for internships or full-time positions.
+It serves as a way to consolidate their projects, CCAs, and experiences, and generates a ready made
+sample resume that they can use for their job interviews and applications.
 
 ### Value proposition
 
-{Describe the value proposition: what problem does it solve?}
+It helps users who do not have time to think thoroughly on how their resume should look like
+Or if they need a resume ready in short notice.
 
 ## User Stories
 

@@ -4,18 +4,20 @@ import org.junit.jupiter.api.Test;
 
 import java.time.YearMonth;
 
-import seedu.duke.commands.AddBulletCommand;
-import seedu.duke.commands.AddCommand;
-import seedu.duke.commands.Command;
-import seedu.duke.commands.EditCommand;
-import seedu.duke.commands.ExitCommand;
-import seedu.duke.commands.FindCommand;
-import seedu.duke.recordtype.Record;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import seedu.duke.commands.AddBulletCommand;
+import seedu.duke.commands.AddCommand;
+import seedu.duke.commands.Command;
+import seedu.duke.commands.DeleteCommand;
+import seedu.duke.commands.ExitCommand;
+import seedu.duke.commands.FindCommand;
+import seedu.duke.recordtype.Record;
+import seedu.duke.commands.EditBulletCommand;
 
 public class ParserTest {
     @Test
@@ -240,5 +242,17 @@ public class ParserTest {
     public void parse_editWithoutFields_returnsNull() {
         Command command = Parser.parse("edit 1");
         assertNull(command);
+    }
+
+    @Test
+    public void parse_editBulletCommand() {
+        Command command = Parser.parse("editbullet 2 3 / updated frontend UI");
+
+        assertInstanceOf(EditBulletCommand.class, command);
+        EditBulletCommand editBulletCommand = (EditBulletCommand) command;
+
+        assertEquals(2, editBulletCommand.getUserRecordIndex());
+        assertEquals(3, editBulletCommand.getUserBulletIndex());
+        assertEquals("updated frontend UI", editBulletCommand.getNewBullet());
     }
 }

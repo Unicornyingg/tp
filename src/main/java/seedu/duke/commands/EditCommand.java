@@ -11,6 +11,7 @@ public class EditCommand extends Command {
     private static final Logger logger = Logger.getLogger(EditCommand.class.getName());
 
     private final int index;
+    private final String newDescription;
     private final String newTitle;
     private final String newRole;
     private final String newTech;
@@ -29,6 +30,9 @@ public class EditCommand extends Command {
         }
 
         this.index = index;
+        this.newDescription = (newDescription == null || newDescription.isBlank())
+                ? null
+                : newDescription.trim();
         this.newTitle = (newTitle == null || newTitle.isBlank()) ? null : newTitle.trim();
         this.newRole = (newRole == null || newRole.isBlank()) ? null : newRole.trim();
         this.newTech = (newTech == null || newTech.isBlank()) ? null : newTech.trim();
@@ -65,6 +69,8 @@ public class EditCommand extends Command {
                 throw new IllegalArgumentException("End date cannot be before start date.");
             }
 
+            if (newDescription != null) {
+                record.setDescription(newDescription);
             if (newTitle != null) {
                 record.setDescription(newTitle);
             }

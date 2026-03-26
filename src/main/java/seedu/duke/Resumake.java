@@ -1,8 +1,7 @@
 package seedu.duke;
 
-import java.io.IOException;
-
 import seedu.duke.commands.Command;
+import seedu.duke.exceptions.ResumakeException;
 
 public class Resumake {
     private RecordList list;
@@ -24,19 +23,19 @@ public class Resumake {
         ui.greetings();
         boolean isExit = false;
         while (!isExit) {
-            String fullCommand = ui.readCommand();
-            Command c = Parser.parse(fullCommand);
-            if (c == null) {
-                ui.showError("Unknown command.");
-                continue;
-            }
-            c.execute(list);
             try {
+                String fullCommand = ui.readCommand();
+                Command c = Parser.parse(fullCommand);
+                if (c == null) {
+                    ui.showError("Unknown command.");
+                    continue;
+                }
+                c.execute(list);
                 storage.saveToFile(list);
-            } catch (IOException e) {
-                ui.showLoadingError();
+                isExit = c.isExit();
+            } catch (ResumakeException e) {
+                ui.showError(e.getMessage());
             }
-            isExit = c.isExit();
         }
     }
 

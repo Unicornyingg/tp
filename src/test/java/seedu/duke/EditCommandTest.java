@@ -159,3 +159,4 @@ public class EditCommandTest {
         assertEquals(1, recordList.getSize());
     }
 }
+

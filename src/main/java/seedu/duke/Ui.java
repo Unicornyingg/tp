@@ -29,6 +29,8 @@ public class Ui {
 
     public void showLoadingError() {
         showLine();
+        showError("Failed to load records from file.");
+        showLine();
     }
 
     public void showError(String message) {

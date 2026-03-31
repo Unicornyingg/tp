@@ -1,5 +1,6 @@
 package seedu.duke;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import seedu.duke.recordtype.Record;
@@ -33,5 +34,9 @@ public class RecordList implements Iterable<Record> {
     public void removeIndex(int index) {
         list.remove(index);
         this.size--;
+    }
+
+    public void sort(Comparator<Record> comparator) {
+        list.sort(comparator);
     }
 }

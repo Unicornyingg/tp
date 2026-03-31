@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import seedu.duke.commands.EditBulletCommand;
 import seedu.duke.commands.AddBulletCommand;
+import seedu.duke.commands.GenerateCommand;
 import seedu.duke.commands.MoveBulletCommand;
 import seedu.duke.commands.AddCommand;
 import seedu.duke.commands.Command;
@@ -16,6 +17,7 @@ import seedu.duke.commands.FindCommand;
 import seedu.duke.commands.ListCommand;
 import seedu.duke.commands.ShowCommand;
 import seedu.duke.commands.EditCommand;
+import seedu.duke.commands.SortCommand;
 import seedu.duke.recordtype.Cca;
 import seedu.duke.recordtype.Experience;
 import seedu.duke.recordtype.Project;
@@ -302,6 +304,12 @@ public class Parser {
             } catch (NumberFormatException e) {
                 return null;
             }
+
+        case "sortrecords":
+            return new SortCommand();
+
+        case "generate resume":
+            return new GenerateCommand();
 
         default:
             logger.warning("Unknown command: " + keyword);

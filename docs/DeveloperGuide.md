@@ -41,6 +41,8 @@ Or if they need a resume ready in short notice.
 |v1.0|fresh graduate|delete outdated or weak bullet points| keep only the most relevant content                            |
 |v1.0|fresh graduate|load previously saved projects when the app starts| continue working without re-entering everything                |
 
+
+
 ## Non-Functional Requirements
 
 1. Performance

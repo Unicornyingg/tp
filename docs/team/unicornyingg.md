@@ -9,7 +9,7 @@ My main contributions focused on improving record/bullet editing workflows and s
 ## Summary of contributions
 
 ### Code contributed
-- [RepoSense link for my code contributions](https://nus-cs2113-ay2526s2.github.io/tp-dashboard/?search=unicornyingg&breakdown=true)
+- [RepoSense link for my code contributions](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=unicornyingg&breakdown=true&sort=groupTitle%20dsc&sortWithin=title&since=2026-02-20T00%3A00%3A00&timeframe=commit&mergegroup=&groupSelect=groupByRepos&checkedFileTypes=docs~functional-code~test-code~other&filteredFileName=)
 
 ### Enhancements implemented
 1. Extended deletion workflows for records and bullets
@@ -37,6 +37,5 @@ My main contributions focused on improving record/bullet editing workflows and s
 ### Contributions to the Developer Guide
 - Added value proposition and user stories aligned with implemented features (including bullet deletion and startup loading).
 - Documented exception-handling and storage-related design decisions in code and supporting docs.
-
 
 

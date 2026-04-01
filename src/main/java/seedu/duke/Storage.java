@@ -15,11 +15,20 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 import seedu.duke.exceptions.ResumakeException;
 
+/**
+ * Handles persistent storage of records in a flat file.
+ */
 public class Storage {
     private static final Logger logger = Logger.getLogger(Storage.class.getName());
     private static final String filepath = "records.txt";
     private final Ui ui = new Ui();
 
+    /**
+     * Saves all records to the default storage file.
+     *
+     * @param list Current record list.
+     * @throws ResumakeException If file creation or write fails.
+     */
     public void saveToFile(RecordList list) throws ResumakeException {
         logger.info("Saving records to file: " + filepath);
         Path path = Paths.get(filepath);
@@ -74,6 +83,13 @@ public class Storage {
         }
     }
 
+    /**
+     * Loads records from the provided storage file path.
+     *
+     * @param filepath Path to the storage file.
+     * @return Loaded records as a {@link RecordList}.
+     * @throws ResumakeException If file setup or read fails.
+     */
     public RecordList loadFromFile(String filepath) throws ResumakeException {
         logger.info("Loading records from file: " + filepath);
         assert filepath != null && !filepath.isBlank() : "filepath should not be blank";
@@ -135,10 +151,21 @@ public class Storage {
         return list;
     }
 
+    /**
+     * Returns the default storage file path.
+     *
+     * @return Default storage file path.
+     */
     public static String getFilepath() {
         return filepath;
     }
 
+    /**
+     * Parses one line from storage into a record object.
+     *
+     * @param line Raw storage line.
+     * @return Parsed record, or null if the line is invalid.
+     */
     private Record parseRecord(String line) {
         assert line != null : "line should not be null";
 
@@ -245,6 +272,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Maps record type code to persistence keyword.
+     *
+     * @param recordType Record type code (for example, P, E, C).
+     * @return Keyword used in file format, or null if unknown.
+     */
     private String getKeyword(String recordType) {
         switch (recordType) {
         case "P":

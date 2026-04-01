@@ -116,6 +116,13 @@ public class Record {
         bullets.add(bullet);
     }
 
+    /**
+     * Deletes a bullet by 0-based index from this record.
+     *
+     * @param bulletIndex 0-based bullet index.
+     * @return Removed bullet text.
+     * @throws IndexOutOfBoundsException If bullet index is invalid.
+     */
     public String deleteBullet(int bulletIndex) {
         if (bulletIndex < 0 || bulletIndex >= bullets.size()) {
             throw new IndexOutOfBoundsException("Bullet index is out of range.");

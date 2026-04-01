@@ -40,6 +40,13 @@ Or if they need a resume ready in short notice.
 |v1.0|internship applicant|mark a project as planned, in-progress, or done| track which projects are ready to show employers               |
 |v1.0|fresh graduate|delete outdated or weak bullet points| keep only the most relevant content                            |
 |v1.0|fresh graduate|load previously saved projects when the app starts| continue working without re-entering everything                |
+|v2.0|internship applicant|filter projects by tag| choose the most relevant projects for a specific internship    |
+|v2.0|internship applicant|export a project's bullet points| paste them directly into my resume or application form         |
+|v2.0|fresh graduate|add start and end dates to a project| show a clear timeline of my work                               |
+|v2.0|career switcher|duplicate an existing project| create tailored versions for different job types               |
+|v2.0|career switcher|sort projects by date| review my experience in a meaningful order                     |
+|v2.0|fresh graduate|edit each aspect of a project| change projects to be better suited for job applications       |
+|v2.0|student job applicant|generate tags| include skills or industries a project is related to           |
 
 ## Non-Functional Requirements
 

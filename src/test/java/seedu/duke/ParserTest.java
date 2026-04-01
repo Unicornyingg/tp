@@ -305,4 +305,55 @@ public class ParserTest {
     public void parseMovebulletCommandExtraArguments() {
         assertNull(Parser.parse("movebullet 1 2 3 4"));
     }
+
+    @Test
+    public void parse_editInvalidIndex_returnsNull() {
+        assertNull(Parser.parse("edit x New Title"));
+    }
+
+    @Test
+    public void parse_editBlankRole_returnsNull() {
+        assertNull(Parser.parse("edit 1 /role   "));
+    }
+
+    @Test
+    public void parse_editBlankTech_returnsNull() {
+        assertNull(Parser.parse("edit 1 /tech   "));
+    }
+
+    @Test
+    public void parse_editInvalidFromDate_returnsNull() {
+        assertNull(Parser.parse("edit 1 /from 2026/01"));
+    }
+
+    @Test
+    public void parse_editInvalidToDate_returnsNull() {
+        assertNull(Parser.parse("edit 1 /to march"));
+    }
+
+    @Test
+    public void parse_editToBeforeFrom_returnsNull() {
+        assertNull(Parser.parse("edit 1 /from 2026-05 /to 2026-04"));
+    }
+
+    @Test
+    public void parse_editbulletMissingSlash_returnsNull() {
+        assertNull(Parser.parse("editbullet 1 1 updated bullet"));
+    }
+
+    @Test
+    public void parse_editbulletBlankNewBullet_returnsEditBulletCommand() {
+        Command command = Parser.parse("editbullet 1 1 /   ");
+        assertInstanceOf(EditBulletCommand.class, command);
+    }
+
+    @Test
+    public void parse_addbulletMissingSlash_returnsNull() {
+        assertNull(Parser.parse("addbullet 1 did frontend UI"));
+    }
+
+    @Test
+    public void parse_addbulletMissingBulletText_returnsNull() {
+        assertNull(Parser.parse("addbullet 1 /"));
+    }
 }

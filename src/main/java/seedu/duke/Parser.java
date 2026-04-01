@@ -28,16 +28,36 @@ public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
 
     private static Command parseEditCommand(String args) {
-        String trimmedArgs = args.trim();
-        String[] editParts = trimmedArgs.split("\\s+", 2);
+        logger.info("Edit command detected");
+        logger.fine(() -> "Parsing edit command args: " + args);
 
+        assert args != null : "Edit command arguments should not be null";
+
+        String trimmedArgs = args.trim();
+        if (trimmedArgs.isEmpty()) {
+            logger.warning("Edit command failed: no arguments provided");
+            return null;
+        }
+
+        String[] editParts = trimmedArgs.split("\\s+", 2);
         if (editParts.length < 2) {
+            logger.warning("Edit command failed: missing index or fields");
             return null;
         }
 
         try {
             int index = Integer.parseInt(editParts[0]) - 1;
             String fields = editParts[1].trim();
+
+            if (index < 0) {
+                logger.warning("Edit command failed: record index must be positive");
+                return null;
+            }
+
+            if (fields.isEmpty()) {
+                logger.warning("Edit command failed: no fields provided");
+                return null;
+            }
 
             int roleIndex = fields.indexOf("/role");
             int techIndex = fields.indexOf("/tech");
@@ -82,6 +102,10 @@ public class Parser {
                     roleEnd = toIndex;
                 }
                 newRole = fields.substring(roleIndex + 5, roleEnd).trim();
+                if (newRole.isEmpty()) {
+                    logger.warning("Edit command failed: /role provided but value is blank");
+                    return null;
+                }
             }
 
             if (techIndex != -1) {
@@ -96,6 +120,10 @@ public class Parser {
                     techEnd = toIndex;
                 }
                 newTech = fields.substring(techIndex + 5, techEnd).trim();
+                if (newTech.isEmpty()) {
+                    logger.warning("Edit command failed: /tech provided but value is blank");
+                    return null;
+                }
             }
 
             if (fromIndex != -1) {
@@ -110,6 +138,10 @@ public class Parser {
                     fromEnd = toIndex;
                 }
                 String fromPart = fields.substring(fromIndex + 5, fromEnd).trim();
+                if (fromPart.isEmpty()) {
+                    logger.warning("Edit command failed: /from provided but value is blank");
+                    return null;
+                }
                 newFrom = parseYearMonth(fromPart, "from");
             }
 
@@ -125,12 +157,40 @@ public class Parser {
                     toEnd = fromIndex;
                 }
                 String toPart = fields.substring(toIndex + 3, toEnd).trim();
+                if (toPart.isEmpty()) {
+                    logger.warning("Edit command failed: /to provided but value is blank");
+                    return null;
+                }
                 newTo = parseYearMonth(toPart, "to");
             }
+
+            if (newTitle == null && newRole == null && newTech == null
+                    && newFrom == null && newTo == null) {
+                logger.warning("Edit command failed: no valid fields found");
+                return null;
+            }
+
+            YearMonth finalFrom = newFrom;
+            YearMonth finalTo = newTo;
+            if (finalFrom != null && finalTo != null && finalTo.isBefore(finalFrom)) {
+                logger.warning("Edit command failed: end date is before start date");
+                return null;
+            }
+
+            logger.fine("Parsed edit fields: index=" + index
+                    + ", title=" + newTitle
+                    + ", role=" + newRole
+                    + ", tech=" + newTech
+                    + ", from=" + newFrom
+                    + ", to=" + newTo);
 
             return new EditCommand(index, newTitle, newRole, newTech, newFrom, newTo);
 
         } catch (NumberFormatException e) {
+            logger.warning("Edit command failed: invalid record index");
+            return null;
+        } catch (IllegalArgumentException e) {
+            logger.warning(() -> "Edit command failed: " + e.getMessage());
             return null;
         }
     }

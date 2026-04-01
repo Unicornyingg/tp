@@ -16,12 +16,13 @@ public class EditBulletCommand extends Command {
     public EditBulletCommand(int userRecordIndex, int userBulletIndex, String newBullet) {
         assert userRecordIndex > 0 : "record index should be more than 0";
         assert userBulletIndex > 0 : "bullet index should be more than 0";
+        assert newBullet != null : "new bullet should not be null";
 
         this.userRecordIndex = userRecordIndex;
         this.userBulletIndex = userBulletIndex;
         this.newBullet = newBullet;
 
-        logger.fine("EditBulletCommand created for record index=" + userRecordIndex
+        logger.info("EditBulletCommand created for record index=" + userRecordIndex
                 + ", bullet index=" + userBulletIndex);
     }
 
@@ -41,11 +42,16 @@ public class EditBulletCommand extends Command {
     public void execute(RecordList list) throws ResumakeException {
         assert list != null : "RecordList should not be null";
 
-        logger.info("Executing bullet edit for record index=" + userRecordIndex
+        logger.info("Executing EditBulletCommand for record index=" + userRecordIndex
                 + ", bullet index=" + userBulletIndex);
 
         try {
             Record record = list.getRecord(userRecordIndex - 1);
+            assert record != null : "Record at valid index should not be null";
+            assert record.getBullets() != null : "Bullets list should not be null";
+
+            logger.fine("Editing bullet in record: " + record.getTitle());
+
             record.editBullet(userBulletIndex - 1, newBullet);
 
             logger.info("Bullet edit succeeded for record index=" + userRecordIndex

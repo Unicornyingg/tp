@@ -66,8 +66,10 @@ public class FindBulletCommand extends Command {
 
             boolean hasMatch = false;
             String lowerKeyword = keyword.toLowerCase();
+            int recordDisplayIndex = 0;
 
             for (Record record : list) {
+                recordDisplayIndex++;
                 assert record != null : "Record in RecordList should not be null";
 
                 if (record == null) {
@@ -98,9 +100,8 @@ public class FindBulletCommand extends Command {
 
                 if (matchCount > 0) {
                     hasMatch = true;
-                    System.out.println(record);
+                    System.out.println(recordDisplayIndex + ". " + record);
                     System.out.println("Bullets:");
-                    System.out.println();
                     System.out.print(bulletOutput);
                 }
             }

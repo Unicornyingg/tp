@@ -14,27 +14,16 @@ public class EditBulletCommand extends Command {
     private final String newBullet;
 
     public EditBulletCommand(int userRecordIndex, int userBulletIndex, String newBullet) {
-        if (userRecordIndex <= 0) {
-            throw new IllegalArgumentException("Record index must be a positive integer.");
-        }
-        if (userBulletIndex <= 0) {
-            throw new IllegalArgumentException("Bullet index must be a positive integer.");
-        }
-        if (newBullet == null || newBullet.trim().isEmpty()) {
-            throw new IllegalArgumentException("Edited bullet cannot be blank.");
-        }
+        assert userRecordIndex > 0 : "record index should be more than 0";
+        assert userBulletIndex > 0 : "bullet index should be more than 0";
+        assert newBullet != null : "new bullet should not be null";
 
         this.userRecordIndex = userRecordIndex;
         this.userBulletIndex = userBulletIndex;
-        this.newBullet = newBullet.trim();
+        this.newBullet = newBullet;
 
-        assert this.userRecordIndex > 0 : "Record index should be 1-based and positive";
-        assert this.userBulletIndex > 0 : "Bullet index should be 1-based and positive";
-        assert !this.newBullet.isBlank() : "Edited bullet should not be blank after trimming";
-
-        logger.info(() -> "EditBulletCommand created for record index=" + userRecordIndex
-                + ", bullet index=" + userBulletIndex
-                + ", new bullet=" + this.newBullet);
+        logger.info("EditBulletCommand created for record index=" + userRecordIndex
+                + ", bullet index=" + userBulletIndex);
     }
 
     public int getUserRecordIndex() {
@@ -53,7 +42,7 @@ public class EditBulletCommand extends Command {
     public void execute(RecordList list) throws ResumakeException {
         assert list != null : "RecordList should not be null";
 
-        logger.info(() -> "Executing EditBulletCommand for record index=" + userRecordIndex
+        logger.info("Executing EditBulletCommand for record index=" + userRecordIndex
                 + ", bullet index=" + userBulletIndex);
 
         try {
@@ -61,23 +50,21 @@ public class EditBulletCommand extends Command {
             assert record != null : "Record at valid index should not be null";
             assert record.getBullets() != null : "Bullets list should not be null";
 
-            logger.fine(() -> "Editing bullet in record: " + record.getTitle());
+            logger.fine("Editing bullet in record: " + record.getTitle());
 
             record.editBullet(userBulletIndex - 1, newBullet);
 
-            logger.info(() -> "Bullet edit succeeded for record index=" + userRecordIndex
+            logger.info("Bullet edit succeeded for record index=" + userRecordIndex
                     + ", bullet index=" + userBulletIndex);
 
             System.out.println("Edited bullet " + userBulletIndex
                     + " in record " + userRecordIndex);
-
         } catch (IndexOutOfBoundsException e) {
-            logger.warning(() -> "Bullet edit failed: record index=" + userRecordIndex
-                    + ", bullet index=" + userBulletIndex + " out of range");
+            logger.warning("Bullet edit failed for record index=" + userRecordIndex
+                    + ", bullet index=" + userBulletIndex);
             throw new ResumakeException("Bullet index is out of range.");
-
         } catch (IllegalArgumentException e) {
-            logger.warning(() -> "Bullet edit failed: " + e.getMessage());
+            logger.warning("Bullet edit failed: " + e.getMessage());
             throw new ResumakeException(e.getMessage());
         }
     }

@@ -1,3 +1,1 @@
-John|123|James@gmail.com
-project Capo CLI /role Developer /tech Java /from 2026-01 /to 2026-03
-experience Google /role “SWE Intern” /tech “JavaScript” /from 2025-12 /to 2026-02 /bullets modulAr also
+John|98765432|John@gmail.com

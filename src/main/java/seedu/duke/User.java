@@ -43,7 +43,6 @@ public class User {
 
     public static User getInstance() {
         if (instance == null) {
-            ui.showMessage("You have not been registered.");
             userInit();
         }
         return instance;

@@ -126,23 +126,35 @@ public class Storage {
         try {
             Scanner sc = new Scanner(file);
 
-// Load user from first line
+            // Load user from first line
             if (sc.hasNextLine()) {
                 String firstLine = sc.nextLine().strip();
-                String[] parts = firstLine.split("\\|");
-                if (parts.length == 3) {
-                    try {
-                        User.loadFrom(parts[0], Integer.parseInt(parts[1]), parts[2]);
-                        logger.info("User loaded from file.");
-                    } catch (NumberFormatException e) {
-                        logger.warning("Invalid user data in file.");
+                if(firstLine.startsWith("USER|")) {
+
+                    String[] parts = firstLine.split("\\|");
+                    if (parts.length == 3) {
+                        try {
+                            User.loadFrom(parts[0], Integer.parseInt(parts[1]), parts[2]);
+                            logger.info("User loaded from file.");
+                        } catch (NumberFormatException e) {
+                            logger.warning("Invalid user data in file.");
+                            User.getInstance();
+                        }
+                    } else {
+                        logger.warning("No valid user data found in first line.");
+                        User.getInstance();
                     }
                 } else {
-                    logger.warning("No valid user data found in first line.");
+                    User.getInstance();
+                    // first line is not a user line, so process it as a record
+                    Record record = parseRecord(firstLine);
+                    list.add(record);
                 }
             } else {
                 logger.warning("File is empty. No user loaded.");
+                User.getInstance();
             }
+
 
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().strip();

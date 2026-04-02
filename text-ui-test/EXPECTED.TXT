@@ -1,3 +1,6 @@
+Hello, what is your name?
+Hello what is your number?
+Finally, what is your email?
 Loaded records from file.
 --------------------
 Welcome to Resumake

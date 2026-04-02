@@ -135,6 +135,75 @@ Added bullet to: Capo CLI
 ```
 ---
 
+### Editing a record: `edit`
+
+Edits an existing record. You can update one or more fields without affecting the rest.
+
+Format:
+`edit RECORD_INDEX [NEW_TITLE] [/role NEW_ROLE] [/tech NEW_TECH] [/from YYYY-MM] [/to YYYY-MM]`
+
+Notes:
+- You can provide any combination of the fields.
+- Fields not specified will remain unchanged.
+- Date format must follow `YYYY-MM`.
+- End date cannot be earlier than start date.
+
+Examples:
+
+Edit only tite:
+```text
+edit 1 New Capo CLI
+```
+
+Edit role and tech:
+```text
+edit 1 /role Team lead /tech Java
+```
+
+Edit dates:
+```text
+edit 1 /from 2025-12 /to 2024-04
+```
+
+Edit multiple fields:
+```text
+edit 1 Capo CLI /role Lead Developer /tech Java /from 2026-01 /to 2026-05
+```
+
+Expected output:
+```text
+--------------------
+Record 1 updated.
+--------------------
+```
+
+---
+
+### Editing a bullet: `editBullet`
+
+Edits an existing bullet poiint within a record.
+
+Format: `editBullet RECORD_INDEX BULLETINDEX / NEW_BULLET_TEXT`
+
+Notes:
+- Both record and bullet indexes are 1 based.
+- The `/` operator is required before the new bullet text.
+- The bullet text cannot be blank.
+
+Example:
+```text
+editBullet 1 2 / Improved performance by optimizing algorithms
+```
+
+Expected Output:
+```text
+--------------------
+Edited bullet 2 in record 1
+Records saved to file
+--------------------
+```
+---
+
 ### Finding records by keyword : `find`
 
 Finds records whose title, role, tech, start date, or end date contains the keyword.

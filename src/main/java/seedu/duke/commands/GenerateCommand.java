@@ -15,14 +15,19 @@ public class GenerateCommand extends Command {
     private static final Logger logger = Logger.getLogger(GenerateCommand.class.getName());
 
     private final Ui ui;
-    User user = User.getInstance();
 
-    public GenerateCommand(){
+    public GenerateCommand() {
         this.ui = new Ui();
     }
 
     @Override
     public void execute(RecordList list) throws ResumakeException {
+        User user = User.getInstance();
+
+        if (user == null) {
+            throw new ResumakeException("User has not been initialized yet.");
+        }
+
         List<String> recordTypes = new ArrayList<>(List.of("Cca", "Experience", "Project"));
 
         ui.showMessage(user.getName());
@@ -30,19 +35,19 @@ public class GenerateCommand extends Command {
         ui.showMessage("Email: " + user.getEmail());
         ui.showLine();
 
-        for (String type : recordTypes){
+        for (String type : recordTypes) {
             ui.showMessage(type);
             ui.showLine();
-            String charType = type.substring(0,1);
-            Integer index = 1;
-            for (Record record : list){
-                if (type.equals("all") || record.getRecordType().equals(charType)) {
+            String charType = type.substring(0, 1);
+            int index = 1;
+
+            for (Record record : list) {
+                if (record.getRecordType().equals(charType)) {
                     logger.info("Executing ShowCommand with Index " + index);
 
                     assert list != null : "RecordList should not be null";
 
                     try {
-
                         System.out.println(record);
 
                         ArrayList<String> bullets = record.getBullets();
@@ -66,6 +71,5 @@ public class GenerateCommand extends Command {
                 index++;
             }
         }
-
     }
 }

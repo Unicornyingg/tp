@@ -7,7 +7,8 @@ import seedu.duke.recordtype.Record;
 import java.util.logging.Logger;
 
 /**
- * Moves a bullet from one position to another within the same record.
+ * Represents a command that moves a bullet from one position to another
+ * within the same record.
  */
 public class MoveBulletCommand extends Command {
     private static final Logger logger = Logger.getLogger(MoveBulletCommand.class.getName());
@@ -25,14 +26,25 @@ public class MoveBulletCommand extends Command {
      * @param toBulletIndex the 0-based target bullet index
      */
     public MoveBulletCommand(int recordIndex, int fromBulletIndex, int toBulletIndex) {
+        this(recordIndex, fromBulletIndex, toBulletIndex, new Ui());
+    }
+
+    public MoveBulletCommand(int recordIndex, int fromBulletIndex, int toBulletIndex, Ui ui) {
         this.recordIndex = recordIndex;
         this.fromBulletIndex = fromBulletIndex;
         this.toBulletIndex = toBulletIndex;
-        this.ui = new Ui();
+        this.ui = ui == null ? new Ui() : ui;
 
         assert this.ui != null : "Ui should be initialized";
     }
 
+    /**
+     * Executes the bullet move operation for a specific record.
+     * Validates the provided list and record index before delegating
+     * bullet position checks to the underlying record logic.
+     *
+     * @param list the {@link RecordList} containing the target record.
+     */
     @Override
     public void execute(RecordList list) {
         logger.info("Executing MoveBulletCommand for recordIndex=" + recordIndex

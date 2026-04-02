@@ -21,7 +21,15 @@ import seedu.duke.exceptions.ResumakeException;
 public class Storage {
     private static final Logger logger = Logger.getLogger(Storage.class.getName());
     private static final String filepath = "records.txt";
-    private final Ui ui = new Ui();
+    private final Ui ui;
+
+    public Storage() {
+        this(new Ui());
+    }
+
+    public Storage(Ui ui) {
+        this.ui = ui == null ? new Ui() : ui;
+    }
 
     /**
      * Saves all records to the default storage file.
@@ -48,7 +56,18 @@ public class Storage {
 
             FileWriter fw = new FileWriter(path.toFile());
 
+            // Save User on the first line
+            User user = User.getInstance();
+            if (user != null) {
+                fw.write("USER|" + user.getName() + "|" + user.getNumber() + "|" + user.getEmail() + "\n");
+            }
+
             for (Record record : list) {
+                if (record == null) {
+                    logger.warning("Skipping null record.");
+                    continue;
+                }
+
                 String keyword = getKeyword(record.getRecordType());
                 if (keyword == null) {
                     logger.warning("Skipping unknown record type: " + record.getRecordType());
@@ -121,6 +140,37 @@ public class Storage {
 
         try {
             Scanner sc = new Scanner(file);
+
+            // Load user from first line
+            if (sc.hasNextLine()) {
+                String firstLine = sc.nextLine().strip();
+                if(firstLine.startsWith("USER|")) {
+
+                    String[] parts = firstLine.split("\\|");
+                    if (parts.length == 4) {
+                        try {
+                            User.loadFrom(parts[1], Integer.parseInt(parts[2]), parts[3]);
+                            logger.info("User loaded from file.");
+                        } catch (NumberFormatException e) {
+                            logger.warning("Invalid user data in file.");
+                            User.getInstance();
+                        }
+                    } else {
+                        logger.warning("No valid user data found in first line.");
+                        User.getInstance();
+                    }
+                } else {
+                    User.getInstance();
+                    // first line is not a user line, so process it as a record
+                    Record record = parseRecord(firstLine);
+                    list.add(record);
+                }
+            } else {
+                logger.warning("File is empty. No user loaded.");
+                User.getInstance();
+            }
+
+
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().strip();
 
@@ -147,6 +197,7 @@ public class Storage {
         }
         logger.info("Records loaded successfully");
         ui.showMessage("Loaded records from file.");
+        ui.showLine();
 
         return list;
     }

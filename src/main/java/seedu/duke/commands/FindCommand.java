@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 /**
  * Represents a command that searches for records containing a given keyword.
- * The search is performed across all records in the RecordList.
- * Matching records are printed to the user.
+ * The search is performed across all records in the {@link RecordList},
+ * and matching records are displayed to the user.
  */
 public class FindCommand extends Command {
     private static final Logger logger = Logger.getLogger(FindCommand.class.getName());
@@ -24,6 +24,10 @@ public class FindCommand extends Command {
      * @throws IllegalArgumentException if the keyword is null or blank.
      */
     public FindCommand(String keyword) {
+        this(keyword, new Ui());
+    }
+
+    public FindCommand(String keyword, Ui ui) {
         if (keyword == null) {
             throw new IllegalArgumentException("Keyword cannot be null");
         }
@@ -34,7 +38,7 @@ public class FindCommand extends Command {
         }
 
         this.keyword = trimmedKeyword;
-        this.ui = new Ui();
+        this.ui = ui == null ? new Ui() : ui;
 
         assert this.ui != null : "Ui should be initialized";
         assert this.keyword != null && !this.keyword.isBlank() : "Keyword should not be blank";
@@ -42,6 +46,11 @@ public class FindCommand extends Command {
         logger.info("FindCommand created with keyword: " + this.keyword);
     }
 
+    /**
+     * Returns the keyword used by this command for matching records.
+     *
+     * @return the non-blank keyword for the search.
+     */
     public String getKeyword() {
         return keyword;
     }
@@ -50,7 +59,7 @@ public class FindCommand extends Command {
      * Executes the find operation by searching for records that contain
      * the specified keyword and printing the results.
      *
-     * @param list The RecordList to search from.
+     * @param list the {@link RecordList} to search from.
      */
     @Override
     public void execute(RecordList list) {

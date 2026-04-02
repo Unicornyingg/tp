@@ -1,6 +1,7 @@
 package seedu.duke;
 
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 import seedu.duke.exceptions.ResumakeException;
 

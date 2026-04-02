@@ -13,6 +13,7 @@ import seedu.duke.recordtype.Record;
 
 public class GenerateCommand extends Command {
     private static final Logger logger = Logger.getLogger(GenerateCommand.class.getName());
+
     private final Ui ui;
     User user = User.getInstance();
 

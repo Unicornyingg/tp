@@ -139,6 +139,12 @@ public class FindCommandTest {
     }
 
     @Test
+    public void constructor_nullUi_usesDefaultUiAndStoresKeyword() {
+        FindCommand findCommand = new FindCommand("java", null);
+        assertEquals("java", findCommand.getKeyword());
+    }
+
+    @Test
     public void execute_nullRecordList_printsErrorMessage() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -147,5 +153,21 @@ public class FindCommandTest {
         findCommand.execute(null);
 
         assertTrue(outputStream.toString().contains("RecordList cannot be null"));
+    }
+
+    @Test
+    public void execute_nullRecordInList_throwsAssertionError() {
+        RecordList list = new RecordList();
+        list.add(null);
+        list.add(new Record(
+                "Java capstone",
+                "Developer",
+                "Java",
+                YearMonth.parse("2026-01"),
+                YearMonth.parse("2026-03")
+        ));
+
+        FindCommand findCommand = new FindCommand("java");
+        assertThrows(AssertionError.class, () -> findCommand.execute(list));
     }
 }

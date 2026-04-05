@@ -1,7 +1,10 @@
 package seedu.duke;
 
 import java.time.YearMonth;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import seedu.duke.commands.MoveBulletCommand;
@@ -12,6 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MoveBulletCommandTest {
+    private final PrintStream originalOut = System.out;
+
+    @AfterEach
+    public void restoreSystemStreams() {
+        System.setOut(originalOut);
+    }
 
     private Record createRecordWithThreeBullets() {
         Record record = new Project("Capo CLI", "Developer", "Java",
@@ -129,8 +138,29 @@ public class MoveBulletCommandTest {
 
     @Test
     public void execute_nullRecordList_noThrow() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
         MoveBulletCommand command = new MoveBulletCommand(0, 0, 1);
 
         assertDoesNotThrow(() -> command.execute(null));
+        assertEquals("--------------------" + System.lineSeparator()
+                        + "Error: RecordList cannot be null." + System.lineSeparator()
+                        + "--------------------" + System.lineSeparator(),
+                outputStream.toString());
+    }
+
+    @Test
+    public void constructor_nullUi_executesNormally() {
+        RecordList list = new RecordList();
+        Record record = createRecordWithThreeBullets();
+        list.add(record);
+
+        MoveBulletCommand command = new MoveBulletCommand(0, 0, 1, null);
+        command.execute(list);
+
+        assertEquals("B", record.getBullets().get(0));
+        assertEquals("A", record.getBullets().get(1));
+        assertEquals("C", record.getBullets().get(2));
     }
 }

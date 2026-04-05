@@ -58,6 +58,22 @@ This feature lets users prioritize stronger achievements without rewriting bulle
 
 ---
 
+## Enhancement: Refactor Ui Usage to Reduce Coupling
+
+**What it does:**  
+Refactored runtime wiring so `Ui` is injected through `Resumake` and `Parser` into command/storage flows, instead of repeatedly constructing UI dependencies inside many execution paths.
+
+**Justification:**  
+Previously, multiple components created their own UI instances. This increased coupling and made UI behavior harder to reason about and test consistently. Injecting shared UI dependencies improves maintainability and keeps I/O ownership clearer.
+
+**Highlights:**
+- Added constructor overloads to support injected `Ui` while preserving backward compatibility.
+- Updated parser execution path to pass shared `Ui` into command creation.
+- Updated storage wiring to use injected `Ui` from the app root.
+- Preserved command behavior/output format while reducing dependency duplication.
+
+---
+
 ## Summary of contributions
 
 ### Code contributed
@@ -76,9 +92,20 @@ This feature lets users prioritize stronger achievements without rewriting bulle
    - Implemented safer parsing and line-level skipping instead of failing the whole load operation.
    - Benefit: startup reliability is improved; one bad line is less likely to block access to all saved data.
 
-3. **Standardized UI output usage (`Ui.showMessage`)**
+3. **Standardized UI output usage (`Ui.showMessage`)** ([#43](https://github.com/AY2526S2-CS2113-F09-2/tp/pull/43))
    - Replaced direct `System.out.println()` usage in selected flow paths with `Ui.showMessage()` for better consistency.
    - Benefit: output formatting is easier to maintain and align across commands.
+
+4. **Refactored Ui dependency flow to reduce coupling** ([#100](https://github.com/AY2526S2-CS2113-F09-2/tp/pull/100))
+   - Shifted core runtime path toward shared `Ui` injection (app root -> parser/storage/commands).
+   - Kept backward-compatible constructor overloads to avoid feature regressions during refactor.
+   - Benefit: cleaner dependency management and better long-term testability.
+
+5. **Expanded automated coverage for runtime + I/O defensive paths** ([#104](https://github.com/AY2526S2-CS2113-F09-2/tp/pull/104))
+   - Added integration-focused tests for `Resumake` run loop to cover startup/exit and invalid-input error handling flow.
+   - Expanded `Ui` tests to cover output helpers (`showLine`, `showMessage`, `showLoadingError`) beyond greeting/read basics.
+   - Added `Storage` defensive tests for malformed user metadata, first-line record fallback, and unknown record type skip behavior.
+   - Benefit: reduces regression risk in startup, console interaction, and persistence edge cases shared across the whole team codebase.
 
 ### Contributions to the User Guide (UG)
 
@@ -88,13 +115,16 @@ This feature lets users prioritize stronger achievements without rewriting bulle
 
 ### Contributions to the Developer Guide (DG)
 
-- To be updated.
+- Documented key technical design decisions for command handling and parsing flow, including validation/error paths.
+- Added/updated implementation notes for robustness-related improvements (defensive storage loading and invalid-input handling).
+- Clarified maintainability direction by documenting the Ui dependency flow refactor (shared injection to reduce coupling).
 
 ### Contributions to team-based tasks
 
 - Set up the GitHub team organization and repository.
 - Added Quick Navigation structure in UG for team documentation quality.
 - Helped align command documentation with implemented behavior before release checks.
+- Strengthened team-wide confidence in core flows by adding regression tests for app runtime, UI output consistency, and storage defensive behavior.
 
 ### Contributions beyond the project team
 

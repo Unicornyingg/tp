@@ -49,6 +49,45 @@ public class UiTest {
     }
 
     @Test
+    public void showLine_noInput_printsSeparator() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+        Ui ui = new Ui();
+
+        ui.showLine();
+
+        String expectedOutput = "--------------------" + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    @Test
+    public void showMessage_messageProvided_printsMessage() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+        Ui ui = new Ui();
+
+        ui.showMessage("Hello world");
+
+        String expectedOutput = "Hello world" + System.lineSeparator();
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    @Test
+    public void showLoadingError_noInput_printsWrappedError() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+        Ui ui = new Ui();
+
+        ui.showLoadingError();
+
+        String lineSeparator = System.lineSeparator();
+        String expectedOutput = "--------------------" + lineSeparator
+                + "Error: Failed to load records from file." + lineSeparator
+                + "--------------------" + lineSeparator;
+        assertEquals(expectedOutput, outputStream.toString());
+    }
+
+    @Test
     public void readCommand_userInputsBye_returnsBye() {
         String userInput = "bye" + System.lineSeparator();
         System.setIn(new ByteArrayInputStream(userInput.getBytes(StandardCharsets.UTF_8)));

@@ -118,6 +118,76 @@ public class StorageTest {
         }
     }
 
+    @Test
+    public void loadFromFile_nonUserFirstLine_parsesAsRecord() throws Exception {
+        User.loadFrom("Existing User", 99999999, "existing@example.com");
+        Storage storage = new Storage(new SilentUi());
+        Path tempDir = Files.createTempDirectory("storage-test-first-line-record");
+        Path tempFile = tempDir.resolve("records.txt");
+        List<String> lines = List.of(
+                "project First /role Dev /tech Java /from 2026-01 /to 2026-02"
+        );
+        Files.write(tempFile, lines);
+
+        try {
+            RecordList loaded = storage.loadFromFile(tempFile.toString());
+
+            assertEquals(1, loaded.getSize());
+            assertEquals("First", loaded.getRecord(0).getTitle());
+            assertEquals("Existing User", User.getInstance().getName());
+        } finally {
+            Files.deleteIfExists(tempFile);
+            Files.deleteIfExists(tempDir);
+        }
+    }
+
+    @Test
+    public void loadFromFile_invalidUserNumber_fallsBackToExistingUser() throws Exception {
+        User.loadFrom("Fallback User", 12345678, "fallback@example.com");
+        Storage storage = new Storage(new SilentUi());
+        Path tempDir = Files.createTempDirectory("storage-test-invalid-user");
+        Path tempFile = tempDir.resolve("records.txt");
+        List<String> lines = List.of(
+                "USER|BadUser|NaN|bad@example.com",
+                "project Good /role Dev /tech Java /from 2026-01 /to 2026-02"
+        );
+        Files.write(tempFile, lines);
+
+        try {
+            RecordList loaded = storage.loadFromFile(tempFile.toString());
+
+            assertEquals(1, loaded.getSize());
+            assertEquals("Good", loaded.getRecord(0).getTitle());
+            assertEquals("Fallback User", User.getInstance().getName());
+            assertEquals(12345678, User.getInstance().getNumber());
+            assertEquals("fallback@example.com", User.getInstance().getEmail());
+        } finally {
+            Files.deleteIfExists(tempFile);
+            Files.deleteIfExists(tempDir);
+        }
+    }
+
+    @Test
+    public void saveToFile_unknownRecordType_skipsUnknownRecord() throws Exception {
+        User.loadFrom("Alex", 98765432, "alex@example.com");
+        Storage storage = new Storage(new SilentUi());
+        RecordList list = new RecordList();
+        list.add(new UnknownRecordType());
+
+        storage.saveToFile(list);
+
+        List<String> lines = Files.readAllLines(recordsPath);
+        assertEquals(1, lines.size());
+        assertEquals("USER|Alex|98765432|alex@example.com", lines.get(0));
+    }
+
+    private static class UnknownRecordType extends Record {
+        UnknownRecordType() {
+            super("Unknown", "Dev", "Java", YearMonth.parse("2026-01"), YearMonth.parse("2026-02"));
+            this.recordType = "X";
+        }
+    }
+
     private static class SilentUi extends Ui {
         @Override
         public void showMessage(String message) {

@@ -241,7 +241,7 @@ public class UserTest {
     public void addSkills_wrappedCurlyQuotes_quotesRemoved() {
         User user = User.getInstance();
 
-        user.addSkills("“C++”");
+        user.addSkills("\u201CC++\u201D");
 
         assertEquals("C++", user.getSkillsAsString());
     }

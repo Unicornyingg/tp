@@ -266,7 +266,7 @@ public class UserTest {
     }
 
     @Test
-    public void removeSkills_skillAddedTwice_removedOnce_skillStillExists() {
+    public void removeSkills_duplicateSkillRemovedOnce_skillStillExists() {
         User user = User.getInstance();
 
         user.addSkills("Java");

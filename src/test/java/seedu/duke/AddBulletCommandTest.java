@@ -59,7 +59,7 @@ public class AddBulletCommandTest {
 
     @Test
     public void addBullet_blankBullet_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ResumakeException.class, () ->
                 new AddBulletCommand(0, "   "));
     }
 

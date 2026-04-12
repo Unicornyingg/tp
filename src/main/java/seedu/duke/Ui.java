@@ -11,15 +11,14 @@ import java.util.NoSuchElementException;
  * and printing formatted messages to the console.
  */
 public class Ui {
-    private InputStream inputStream;
-    private Scanner scanner;
+    private static InputStream inputStream = System.in;
+    private static Scanner scanner = new Scanner(inputStream);
 
     /**
      * Constructs a Ui object and initializes the input scanner.
      */
     public Ui() {
-        inputStream = System.in;
-        scanner = new Scanner(inputStream);
+
     }
 
 

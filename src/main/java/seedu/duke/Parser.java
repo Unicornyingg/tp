@@ -337,8 +337,10 @@ public class Parser {
                 }
                 String bullet = bulletPart.substring(1).trim();
                 return new AddBulletCommand(index, bullet, effectiveUi);
+            } catch (NumberFormatException e) {
+                throw new ResumakeException("Please follow the correct format");
             } catch (ResumakeException e) {
-                throw new ResumakeException("Error: " + e.getMessage());
+                throw e;
             }
 
         case "edit":

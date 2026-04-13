@@ -4,6 +4,8 @@ import java.time.DateTimeException;
 import java.time.YearMonth;
 
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import seedu.duke.commands.EditBulletCommand;
 import seedu.duke.commands.AddBulletCommand;
@@ -29,6 +31,7 @@ import seedu.duke.recordtype.Record;
 public class Parser {
 
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
+    private static final Pattern FIELD_TOKEN_PATTERN = Pattern.compile("(?:^|\\s)(/\\S+)");
 
     /**
      * Parses an edit command string into an {@code EditCommand}
@@ -505,6 +508,7 @@ public class Parser {
         assert split.length >= 2 : "Expected command arguments after command word";
 
         String args = split[1].trim();
+        validateTimedRecordFields(args);
 
         int roleIndex = args.indexOf("/role");
         int techIndex = args.indexOf("/tech");
@@ -541,6 +545,28 @@ public class Parser {
         }
 
         return new ParsedFields(titlePart, rolePart, techPart, from, to);
+    }
+
+    /**
+     * Validates that timed-record commands only contain supported field flags.
+     *
+     * @param args raw argument string after command keyword.
+     * @throws ResumakeException if an unsupported field is provided.
+     */
+    private static void validateTimedRecordFields(String args) throws ResumakeException {
+        Matcher matcher = FIELD_TOKEN_PATTERN.matcher(args);
+
+        while (matcher.find()) {
+            String fieldToken = matcher.group(1);
+            if (!fieldToken.equals("/role")
+                    && !fieldToken.equals("/tech")
+                    && !fieldToken.equals("/from")
+                    && !fieldToken.equals("/to")) {
+                throw new ResumakeException(
+                        "Error: \"" + fieldToken + "\" is not a valid field. "
+                                + "Please use /role, /tech, /from, and /to only.");
+            }
+        }
     }
 
     /**

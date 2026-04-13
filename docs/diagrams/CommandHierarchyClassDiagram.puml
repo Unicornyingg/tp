@@ -19,6 +19,7 @@ class ExitCommand
 class FindCommand
 class FindBulletCommand
 class GenerateCommand
+class HelpCommand
 class ListCommand
 class MoveBulletCommand
 class ShowCommand
@@ -34,6 +35,7 @@ Command <|-- ExitCommand
 Command <|-- FindCommand
 Command <|-- FindBulletCommand
 Command <|-- GenerateCommand
+Command <|-- HelpCommand
 Command <|-- ListCommand
 Command <|-- MoveBulletCommand
 Command <|-- ShowCommand

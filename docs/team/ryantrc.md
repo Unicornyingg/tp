@@ -102,8 +102,14 @@ This feature enables users to directly edit individual bullet points without nee
 
 ### User Guide:
 
-- Added documentation for editing-related commands such as edit, editbullet, addbullet, and movebullet.
-- Improved command descriptions and examples so users can understand how to update resume fields and bullet points correctly.
+- Added comprehensive documentation for edit and editbullet commands, including command syntax, usage examples, and common use cases.
+- Improved existing command descriptions and examples for addbullet and movebullet to help users understand how to update and manage resume fields and bullet points.
+- Performed final UG tweaks and refinements to ensure clarity and consistency across documentation.
+
+### Developer Guide:
+
+- Updated the Developer Guide to document the design and implementation of editing-related features.
+- Added technical details to help future developers understand the architecture and modifications related to record editing functionality.
 
 ---
 

@@ -75,7 +75,7 @@ public class ShowCommand extends Command {
         assert list != null : "RecordList should not be null";
 
         logger.info("Executing ShowCommand with internal index: " + index);
-
+        ui.showLine();
         try {
             if (index < 0 || index >= list.getSize()) {
                 logger.warning("Invalid record index requested: " + (index + 1));

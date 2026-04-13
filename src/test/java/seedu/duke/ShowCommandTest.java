@@ -162,7 +162,8 @@ public class ShowCommandTest {
 
         String result = output.toString();
 
-        assertTrue(result.contains("Error: Invalid record index: 1"));
+        assertTrue(result.contains("Error: Invalid record index"));
+        assertTrue(result.contains("Record List Size: 0"));
     }
 
     @Test

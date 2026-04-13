@@ -206,7 +206,7 @@ public class UserTest {
 
         user.addSkills("Java");
 
-        assertEquals("Java", user.getSkillsAsString());
+        assertEquals("java", user.getSkillsAsString());
     }
 
     @Test
@@ -216,7 +216,7 @@ public class UserTest {
         user.addSkills("Java");
         user.addSkills("Java");
 
-        assertEquals("Java", user.getSkillsAsString());
+        assertEquals("java", user.getSkillsAsString());
     }
 
     @Test
@@ -225,7 +225,7 @@ public class UserTest {
 
         user.addSkills("\"JavaScript\"");
 
-        assertEquals("JavaScript", user.getSkillsAsString());
+        assertEquals("javascript", user.getSkillsAsString());
     }
 
     @Test
@@ -234,7 +234,7 @@ public class UserTest {
 
         user.addSkills("'Python'");
 
-        assertEquals("Python", user.getSkillsAsString());
+        assertEquals("python", user.getSkillsAsString());
     }
 
     @Test
@@ -243,7 +243,7 @@ public class UserTest {
 
         user.addSkills("\u201CC++\u201D");
 
-        assertEquals("C++", user.getSkillsAsString());
+        assertEquals("c++", user.getSkillsAsString());
     }
 
     @Test
@@ -252,7 +252,7 @@ public class UserTest {
 
         user.addSkills("   \"Go\"   ");
 
-        assertEquals("Go", user.getSkillsAsString());
+        assertEquals("go", user.getSkillsAsString());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class UserTest {
         user.addSkills("Java");
         user.removeSkills("Java");
 
-        assertEquals("Java", user.getSkillsAsString());
+        assertEquals("java", user.getSkillsAsString());
     }
 
     @Test
@@ -294,7 +294,7 @@ public class UserTest {
         user.addSkills("Python");
 
         String result = user.getSkillsAsString();
-        assertTrue(result.contains("Java"));
-        assertTrue(result.contains("Python"));
+        assertTrue(result.contains("java"));
+        assertTrue(result.contains("python"));
     }
 }

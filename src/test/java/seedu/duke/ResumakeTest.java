@@ -87,6 +87,7 @@ public class ResumakeTest {
     public void run_duplicateRecord_continuesToNextCommand() {
         String recordCommand = "project Portfolio /role Developer /tech Java /from 2026-01 /to 2026-03";
         String userInput = recordCommand + System.lineSeparator()
+                + "n" + System.lineSeparator()
                 + recordCommand + System.lineSeparator()
                 + "list" + System.lineSeparator()
                 + "bye" + System.lineSeparator();

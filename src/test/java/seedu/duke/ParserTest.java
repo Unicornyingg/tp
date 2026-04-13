@@ -2,7 +2,11 @@ package seedu.duke;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,9 +27,20 @@ import seedu.duke.commands.EditBulletCommand;
 import seedu.duke.commands.MoveBulletCommand;
 
 public class ParserTest {
+    private final InputStream originalIn = System.in;
+
+    @AfterEach
+    public void restoreSystemIn() {
+        System.setIn(originalIn);
+    }
+
     @BeforeEach
     public void setUp() {
         User.loadFrom("John", 91234567, "john@example.com");
+    }
+
+    private void provideInput(String input) {
+        System.setIn(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
@@ -79,6 +94,7 @@ public class ParserTest {
 
     @Test
     public void parse_validProjectInput() throws Exception {
+        provideInput("n");
         Command command = Parser.parse(
                 "project Capo CLI /role Developer /tech Java /from 2026-01 /to 2026-03"
         );
@@ -97,6 +113,7 @@ public class ParserTest {
 
     @Test
     public void parse_validExperienceInput() throws Exception {
+        provideInput("n");
         Command command = Parser.parse(
                 "experience Google /role SWE Intern /tech JavaScript /from 2025-12 /to 2026-02"
         );
@@ -115,6 +132,7 @@ public class ParserTest {
 
     @Test
     public void parse_validCcaInput() throws Exception {
+        provideInput("n");
         Command command = Parser.parse(
                 "cca Tennis /role Captain /tech nil /from 2025-01 /to 2026-01"
         );

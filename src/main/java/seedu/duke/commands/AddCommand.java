@@ -24,6 +24,13 @@ public class AddCommand extends Command {
         this(r, new Ui());
     }
 
+    /**
+     * Creates an AddCommand with the specified record and UI.
+     *
+     * @param r The record to be added.
+     * @param ui The UI used to show messages and read bullet prompts.
+     * @throws ResumakeException If the record is null or has an empty title.
+     */
     public AddCommand(Record r, Ui ui) throws ResumakeException {
         if (r == null) {
             throw new ResumakeException("Record cannot be null");
@@ -65,6 +72,33 @@ public class AddCommand extends Command {
         list.add(r);
 
         logger.info("Record added successfully: "+ r.getTitle());
+
+        ui.showMessage("Do you want to add bullet points? (y/n)");
+        String answer = ui.readCommand().trim();
+
+        if (answer.equalsIgnoreCase("y")) {
+            ui.showMessage("Enter bullet points one by one. Type \"esc\" to stop");
+
+            while (true) {
+                String bullet = ui.readCommand().trim();
+
+                if (bullet.equalsIgnoreCase("esc")) {
+                    break;
+                }
+
+                if (bullet.isBlank()) {
+                    ui.showMessage("Bullet cannot be blank");
+                    continue;
+                }
+                try {
+                    r.addBullet(bullet);
+                    ui.showMessage("Bullet added");
+                } catch (ResumakeException e) {
+                    ui.showMessage(e.getMessage());
+                }
+
+            }
+        }
 
         ui.showLine();
         System.out.println("[" + r.getRecordType() + "] "

@@ -34,6 +34,17 @@ public class Parser {
     private static final Logger logger = Logger.getLogger(Parser.class.getName());
     private static final Pattern FIELD_TOKEN_PATTERN = Pattern.compile("(?:^|\\s)(/\\S+)");
 
+    // Field flag constants
+    private static final String ROLE_FLAG = "/role";
+    private static final String TECH_FLAG = "/tech";
+    private static final String FROM_FLAG = "/from";
+    private static final String TO_FLAG = "/to";
+
+    private static final int ROLE_FLAG_LENGTH = ROLE_FLAG.length();
+    private static final int TECH_FLAG_LENGTH = TECH_FLAG.length();
+    private static final int FROM_FLAG_LENGTH = FROM_FLAG.length();
+    private static final int TO_FLAG_LENGTH = TO_FLAG.length();
+
     /**
      * Parses an edit command string into an {@code EditCommand}
      *
@@ -73,10 +84,10 @@ public class Parser {
                 throw new ResumakeException("Edit command failed: no fields provided.");
             }
 
-            int roleIndex = fields.indexOf("/role");
-            int techIndex = fields.indexOf("/tech");
-            int fromIndex = fields.indexOf("/from");
-            int toIndex = fields.indexOf("/to");
+            int roleIndex = fields.indexOf(ROLE_FLAG);
+            int techIndex = fields.indexOf(TECH_FLAG);
+            int fromIndex = fields.indexOf(FROM_FLAG);
+            int toIndex = fields.indexOf(TO_FLAG);
 
             // Check for invalid fields (forward slashes that aren't valid flags)
             int slashIndex = 0;
@@ -145,7 +156,7 @@ public class Parser {
                 if (toIndex != -1 && toIndex > roleIndex && toIndex < roleEnd) {
                     roleEnd = toIndex;
                 }
-                newRole = fields.substring(roleIndex + 5, roleEnd).trim();
+                newRole = fields.substring(roleIndex + ROLE_FLAG_LENGTH, roleEnd).trim();
                 if (newRole.isEmpty()) {
                     logger.warning("Edit command failed: /role provided but value is blank");
                     throw new ResumakeException("/role provided but value is blank.");
@@ -163,7 +174,7 @@ public class Parser {
                 if (toIndex != -1 && toIndex > techIndex && toIndex < techEnd) {
                     techEnd = toIndex;
                 }
-                newTech = fields.substring(techIndex + 5, techEnd).trim();
+                newTech = fields.substring(techIndex + TECH_FLAG_LENGTH, techEnd).trim();
                 if (newTech.isEmpty()) {
                     logger.warning("Edit command failed: /tech provided but value is blank");
                     throw new ResumakeException("/tech provided but value is blank.");
@@ -181,7 +192,7 @@ public class Parser {
                 if (toIndex != -1 && toIndex > fromIndex && toIndex < fromEnd) {
                     fromEnd = toIndex;
                 }
-                String fromPart = fields.substring(fromIndex + 5, fromEnd).trim();
+                String fromPart = fields.substring(fromIndex + FROM_FLAG_LENGTH, fromEnd).trim();
                 if (fromPart.isEmpty()) {
                     logger.warning("Edit command failed: /from provided but value is blank");
                     throw new ResumakeException("/from provided but value is blank.");
@@ -200,7 +211,7 @@ public class Parser {
                 if (fromIndex != -1 && fromIndex > toIndex && fromIndex < toEnd) {
                     toEnd = fromIndex;
                 }
-                String toPart = fields.substring(toIndex + 3, toEnd).trim();
+                String toPart = fields.substring(toIndex + TO_FLAG_LENGTH, toEnd).trim();
                 if (toPart.isEmpty()) {
                     logger.warning("Edit command failed: /to provided but value is blank");
                     throw new ResumakeException("/to provided but value is blank.");
@@ -308,6 +319,9 @@ public class Parser {
             }
 
         case "help":
+            if (split.length > 1 && !split[1].trim().isEmpty()) {
+                throw new ResumakeException("Please follow the correct format.");
+            }
             logger.info("Help command detected");
             return new HelpCommand(effectiveUi);
 
@@ -372,12 +386,19 @@ public class Parser {
                 throw new ResumakeException("Please follow the correct format.");
             }
             try {
-                int index = Integer.parseInt(parts[0]) - 1;
+                int recordIndex = Integer.parseInt(parts[0]);
+                if (recordIndex <= 0) {
+                    throw new ResumakeException("Record index must be positive (1-based).");
+                }
+                int index = recordIndex - 1;
                 String bulletPart = parts[1].trim();
                 if (!bulletPart.startsWith("/")) {
                     throw new ResumakeException("Bullet must start with /.");
                 }
                 String bullet = bulletPart.substring(1).trim();
+                if (bullet.isEmpty()) {
+                    throw new ResumakeException("Bullet text cannot be blank.");
+                }
                 return new AddBulletCommand(index, bullet, effectiveUi);
             } catch (NumberFormatException e) {
                 throw new ResumakeException("Please follow the correct format.");
@@ -438,7 +459,7 @@ public class Parser {
                 }
 
                 String newBullet = bulletPart.substring(1).trim();
-                return new EditBulletCommand(recordIndex, bulletIndex, newBullet);
+                return new EditBulletCommand(recordIndex, bulletIndex, newBullet, effectiveUi);
             } catch (NumberFormatException e) {
                 throw new ResumakeException("Please follow the correct format.");
             }
@@ -531,10 +552,10 @@ public class Parser {
         }
 
         String titlePart = args.substring(0, roleIndex).trim();
-        String rolePart = args.substring(roleIndex + 5, techIndex).trim();
-        String techPart = args.substring(techIndex + 5, fromIndex).trim();
-        String fromPart = args.substring(fromIndex + 5, toIndex).trim();
-        String toPart = args.substring(toIndex + 3).trim();
+        String rolePart = args.substring(roleIndex + ROLE_FLAG_LENGTH, techIndex).trim();
+        String techPart = args.substring(techIndex + TECH_FLAG_LENGTH, fromIndex).trim();
+        String fromPart = args.substring(fromIndex + FROM_FLAG_LENGTH, toIndex).trim();
+        String toPart = args.substring(toIndex + TO_FLAG_LENGTH).trim();
 
         if (titlePart.isEmpty() || rolePart.isEmpty() || techPart.isEmpty()) {
             throw new ResumakeException("Title, role, and tech cannot be empty.");

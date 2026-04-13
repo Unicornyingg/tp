@@ -25,7 +25,6 @@ Storage -> Storage: readString(records.txt)
 
 alt content changed
     Storage -> Storage: writeString(records.txt, serialized)
-    Storage -> Ui: show "Records saved to file."
 else content unchanged
     Storage --> Resumake: return (skip write)
 end

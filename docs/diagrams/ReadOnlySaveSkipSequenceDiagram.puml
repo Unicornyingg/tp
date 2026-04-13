@@ -21,9 +21,7 @@ Storage -> Storage: readString(records.txt)
 
 alt serialized == existing
     Storage -> Storage: skip write
-    note right of Storage: no "Records saved to file." message
 else serialized != existing
     Storage -> Storage: writeString(...)
-    Storage -> Ui: show save message
 end
 @enduml

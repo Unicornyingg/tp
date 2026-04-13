@@ -16,7 +16,9 @@ package "seedu.duke" {
   class Ui {
     +showLine(): void
     +showMessage(message: String): void
+    +showPrompt(): void
     +showError(message: String): void
+    +showLoadingError(): void
     +readCommand(): String
     +greetings(): void
   }
@@ -87,6 +89,7 @@ package "seedu.duke.commands" {
   class FindCommand
   class FindBulletCommand
   class GenerateCommand
+  class HelpCommand
   class ListCommand
   class MoveBulletCommand
   class ShowCommand
@@ -102,6 +105,7 @@ package "seedu.duke.commands" {
   Command <|-- FindCommand
   Command <|-- FindBulletCommand
   Command <|-- GenerateCommand
+  Command <|-- HelpCommand
   Command <|-- ListCommand
   Command <|-- MoveBulletCommand
   Command <|-- ShowCommand
@@ -167,6 +171,7 @@ FindCommand ..> RecordList
 FindBulletCommand ..> RecordList
 GenerateCommand ..> RecordList
 GenerateCommand ..> User
+HelpCommand ..> Ui
 ListCommand ..> RecordList
 MoveBulletCommand ..> RecordList
 MoveBulletCommand ..> Record

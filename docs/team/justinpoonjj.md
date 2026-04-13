@@ -2,74 +2,9 @@
 
 ## Overview
 
-**ResuMake CLI** is a desktop command-line application that helps users manage and structure resume content such as projects, experiences, CCAs, and bullet points. The user interacts with it through CLI commands, and the application is written in Java.
+**ResuMake CLI** is a Java command-line application that helps users manage resume content such as projects, experiences, CCAs, and bullet points. Users interact with the application through text commands, which are parsed into command objects and executed against the resume record list.
 
 Given below are my contributions to the project.
-
----
-
-## New Feature: Parser for Command Interpretation
-
-**What it does:**  
-Parses raw user input into executable commands by identifying the command keyword and extracting relevant fields such as title, role, tech stack, and dates.
-
-**Justification:**  
-This feature is essential because it acts as the bridge between user input and application logic. Without a robust parser, commands cannot be interpreted correctly, making the application difficult to use.
-
-**Highlights:**
-- Designed a structured parsing flow to handle multiple command types, including add, edit, delete, and bullet commands.
-- Implemented validation for input formats such as required fields, field order, date format, and invalid command flags.
-- Refactored parsing logic to use a consistent exception-based approach through `ResumakeException` instead of returning `null`.
-- Handled more complex parsing cases such as optional edit fields and command flags (`/role`, `/tech`, `/from`, `/to`).
-
----
-
-## New Feature: Add Command
-
-**What it does:**  
-Allows users to add new records such as projects, experiences, and CCAs into the system.
-
-**Justification:**  
-This is a core feature because it enables users to build and store their resume content.
-
-**Highlights:**
-- Integrated `project`, `experience`, and `cca` parsing with the shared `Record` abstraction.
-- Used the `Record` hierarchy (`Project`, `Experience`, `Cca`) so add-record commands can share common parsing and validation logic.
-- Returned an `AddCommand` with the parsed `Record`, keeping command creation consistent across record types.
-- Added duplicate record checks to prevent identical records from being added.
-
----
-
-## New Feature: AddBullet Command
-
-**What it does:**  
-Allows users to add bullet points to a specific record.
-
-**Justification:**  
-Bullet points are essential for detailing achievements and responsibilities in a resume. This feature improves usability by allowing users to update records incrementally.
-
-**Highlights:**
-- Added indexed access to records for bullet insertion.
-- Validated record indices and bullet content.
-- Prevented blank and duplicate bullet points from being added.
-- Improved error handling so invalid bullet input is surfaced cleanly instead of crashing the application.
-
----
-
-## Enhancement: Add Bullets During Add-Record Flow
-
-**What it does:**  
-After a user adds a record, the app can prompt them to add bullet points immediately without requiring a separate `addbullet` command.
-
-**Justification:**  
-Users often think of resume bullets while creating the record itself. This improves the add-record workflow by making record creation and bullet entry feel more connected.
-
-**Highlights:**
-- Extended `AddCommand` so users can choose whether to enter bullets after adding a record.
-- Allowed repeated bullet entry until the user exits the prompt.
-- Added test coverage for declining bullet entry, adding multiple bullets, blank bullet handling, duplicate bullet handling, and immediate exit.
-
----
 
 ## Summary of Contributions
 
@@ -79,54 +14,40 @@ Users often think of resume bullets while creating the record itself. This impro
 
 ### Enhancements Implemented
 
-1. **Improved parser robustness**
-   - Refactored parser errors to use `ResumakeException` consistently.
-   - Added validation for malformed command formats, missing fields, invalid fields, invalid indices, and invalid dates.
-   - Benefit: users receive clearer error messages and the app avoids silent parser failures.
+- **Parser for command interpretation**: Implemented and improved parsing of raw user input into executable commands, including add, edit, delete, and bullet-related commands. Added validation for malformed formats, missing fields, field order, invalid command flags, invalid indices, and date formats.
 
-2. **Improved add-record and record abstraction integration**
-   - Integrated add-record parsing with the `Record` hierarchy (`Project`, `Experience`, `Cca`).
-   - Extracted shared fields such as title, role, tech stack, start date, and end date before constructing the correct record subclass.
-   - Benefit: add-record commands follow one consistent parsing and execution flow.
+- **Consistent exception-based parsing**: Refactored parser error handling to use `ResumakeException` more consistently instead of relying on `null` command returns. This makes parser failures clearer and helps the main application loop display user-facing error messages without crashing.
 
-3. **Improved duplicate and invalid input handling**
-   - Added duplicate record protection.
-   - Prevented duplicate bullets and blank bullets from being added.
-   - Fixed cases where invalid bullet input could crash or prematurely terminate the command flow.
-   - Benefit: resume data remains cleaner and invalid input is handled more safely.
+- **Add-record command flow**: Integrated `project`, `experience`, and `cca` commands with the shared `Record` abstraction and record subclasses (`Project`, `Experience`, `Cca`). Added duplicate record checks so identical records are rejected before being added.
 
-4. **Improved test coverage and regression confidence**
-   - Added and expanded tests for `AddCommand`, `AddBulletCommand`, `Record`, `Parser`, and `Resumake`.
-   - Added regression tests for duplicate records, duplicate bullets, blank bullet input, and the add-record flow.
-   - Updated text UI tests to reflect expected command behavior and outputs.
+- **Bullet-point support**: Implemented and improved `AddBulletCommand` so users can add bullet points to existing records. Added validation for invalid record indices, blank bullets, and duplicate bullets.
 
-5. **Code quality and maintainability**
-   - Added Javadocs for newly introduced public APIs where needed.
-   - Reformatted parser code to satisfy checkstyle line-length and indentation rules.
-   - Used Java logging (`Logger`) to trace parser and command execution paths during debugging.
+- **Add bullets during record creation**: Enhanced `AddCommand` so users can add bullet points immediately after creating a record. The flow supports repeated bullet entry until `esc`, handles blank and duplicate bullets, and re-prompts when users enter an invalid `y/n` answer instead of silently skipping bullet entry.
 
-### Contributions to the User Guide (UG)
+- **Tests and regression coverage**: Added and expanded tests for `Parser`, `AddCommand`, `AddBulletCommand`, `Record`, and `Resumake`. Covered duplicate records, duplicate bullets, blank bullet input, invalid prompt input, invalid command formats, and add-record flows.
 
-- Documented command formats for adding records and bullet points.
-- Clarified required input structure, field order, and date format expectations.
-- Updated user-facing examples for commands I worked on.
+- **Code quality**: Added Javadocs for newly introduced public APIs where needed, reformatted `Parser` to satisfy checkstyle rules, standardized user-facing error messages, and used Java logging to trace parser and command execution paths during debugging.
 
-### Contributions to the Developer Guide (DG)
+### Contributions to the User Guide
 
-- Added implementation details for the `Parser` component.
-- Explained the command parsing workflow and design decisions.
-- Documented how parser output connects to command execution and the record model.
+- Documented the command formats for adding records and bullet points.
+- Clarified required field order, date format expectations, and examples for commands I worked on.
+- Updated the add-record workflow to explain that users can add bullet points immediately after creating a record.
+
+### Contributions to the Developer Guide
+
+- Documented the `Parser` component and how parsed input is converted into command objects.
+- Explained how parser output connects to command execution and the `Record` model.
+- Added implementation notes for validation and exception handling decisions in the parser flow.
 
 ### Contributions to Team-Based Tasks
 
-- Helped structure the core application flow: `Parser -> Command -> Execution -> Storage`.
+- Helped structure the core application flow from `Parser` to `Command` execution and storage.
 - Contributed to discussions on exception handling, command consistency, and parser behavior.
 - Reviewed teammates' code and provided feedback on command structure and parsing logic.
 
 ### Tools
 
-- Used JUnit to test parser and command functionality.
+- Used JUnit for parser and command testing.
 - Used Gradle (`test`, `checkstyleMain`, `checkstyleTest`) for verification.
-- Used Java logging (`Logger`) for debugging and tracing command execution.
-
----
+- Used Java logging for debugging and tracing command behavior.

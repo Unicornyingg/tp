@@ -57,6 +57,7 @@ public class EditUserCommand extends Command {
                 logger.info("EditUserCommand succeeded: field \"" + field
                         + "\" updated to: " + getCurrentValue(user));
                 ui.showMessage("Updated " + field + " to: " + getCurrentValue(user));
+                ui.showLine();
                 return;
             } catch (ResumakeException e) {
                 int attemptsLeft = MAX_ATTEMPTS - attempt - 1;

@@ -84,32 +84,11 @@ public class Parser {
                 throw new ResumakeException("Edit command failed: no fields provided.");
             }
 
-            int roleIndex = fields.indexOf(ROLE_FLAG);
-            int techIndex = fields.indexOf(TECH_FLAG);
-            int fromIndex = fields.indexOf(FROM_FLAG);
-            int toIndex = fields.indexOf(TO_FLAG);
-
-            // Check for invalid fields (forward slashes that aren't valid flags)
-            int slashIndex = 0;
-            while ((slashIndex = fields.indexOf('/', slashIndex)) != -1) {
-                boolean isValidFlag = false;
-                if ((roleIndex != -1 && slashIndex == roleIndex)
-                        || (techIndex != -1 && slashIndex == techIndex)
-                        || (fromIndex != -1 && slashIndex == fromIndex)
-                        || (toIndex != -1 && slashIndex == toIndex)) {
-                    isValidFlag = true;
-                }
-                if (!isValidFlag) {
-                    // Extract the invalid field name
-                    String invalidField = fields.substring(slashIndex).split("\\s+")[0];
-                    logger.warning("Edit command failed: invalid field \"" + invalidField + "\" provided");
-                    throw new ResumakeException("\"" + invalidField
-                            + "\" is not a valid field. Please use the following format "
-                            + "\"edit RECORD_INDEX [NEW_TITLE] [/role NEW_ROLE] [/tech NEW_TECH] "
-                            + "[/from YYYY-MM] [/to YYYY-MM]\".");
-                }
-                slashIndex++;
-            }
+            validateFieldTokens(fields);
+            int roleIndex = findFieldIndex(fields, ROLE_FLAG);
+            int techIndex = findFieldIndex(fields, TECH_FLAG);
+            int fromIndex = findFieldIndex(fields, FROM_FLAG);
+            int toIndex = findFieldIndex(fields, TO_FLAG);
 
             String newTitle = null;
             String newRole = null;
@@ -462,6 +441,8 @@ public class Parser {
                 return new EditBulletCommand(recordIndex, bulletIndex, newBullet, effectiveUi);
             } catch (NumberFormatException e) {
                 throw new ResumakeException("Please follow the correct format.");
+            } catch (IllegalArgumentException e) {
+                throw new ResumakeException(e.getMessage());
             }
 
         case "sort":
@@ -534,12 +515,12 @@ public class Parser {
         assert split.length >= 2 : "Expected command arguments after command word";
 
         String args = split[1].trim();
-        validateTimedRecordFields(args);
+        validateFieldTokens(args);
 
-        int roleIndex = args.indexOf("/role");
-        int techIndex = args.indexOf("/tech");
-        int fromIndex = args.indexOf("/from");
-        int toIndex = args.indexOf("/to");
+        int roleIndex = findFieldIndex(args, ROLE_FLAG);
+        int techIndex = findFieldIndex(args, TECH_FLAG);
+        int fromIndex = findFieldIndex(args, FROM_FLAG);
+        int toIndex = findFieldIndex(args, TO_FLAG);
 
         if (roleIndex == -1 || techIndex == -1 || fromIndex == -1 || toIndex == -1) {
             throw new ResumakeException(
@@ -579,20 +560,56 @@ public class Parser {
      * @param args raw argument string after command keyword.
      * @throws ResumakeException if an unsupported field is provided.
      */
-    private static void validateTimedRecordFields(String args) throws ResumakeException {
+    private static void validateFieldTokens(String args) throws ResumakeException {
         Matcher matcher = FIELD_TOKEN_PATTERN.matcher(args);
+        boolean roleSeen = false;
+        boolean techSeen = false;
+        boolean fromSeen = false;
+        boolean toSeen = false;
 
         while (matcher.find()) {
             String fieldToken = matcher.group(1);
-            if (!fieldToken.equals("/role")
-                    && !fieldToken.equals("/tech")
-                    && !fieldToken.equals("/from")
-                    && !fieldToken.equals("/to")) {
+            switch (fieldToken) {
+            case ROLE_FLAG:
+                if (roleSeen) {
+                    throw new ResumakeException("Duplicate field: " + fieldToken + ".");
+                }
+                roleSeen = true;
+                break;
+            case TECH_FLAG:
+                if (techSeen) {
+                    throw new ResumakeException("Duplicate field: " + fieldToken + ".");
+                }
+                techSeen = true;
+                break;
+            case FROM_FLAG:
+                if (fromSeen) {
+                    throw new ResumakeException("Duplicate field: " + fieldToken + ".");
+                }
+                fromSeen = true;
+                break;
+            case TO_FLAG:
+                if (toSeen) {
+                    throw new ResumakeException("Duplicate field: " + fieldToken + ".");
+                }
+                toSeen = true;
+                break;
+            default:
                 throw new ResumakeException(
                         "\"" + fieldToken + "\" is not a valid field. "
                                 + "Please use /role, /tech, /from, and /to only.");
             }
         }
+    }
+
+    private static int findFieldIndex(String args, String field) {
+        Matcher matcher = FIELD_TOKEN_PATTERN.matcher(args);
+        while (matcher.find()) {
+            if (matcher.group(1).equals(field)) {
+                return matcher.start(1);
+            }
+        }
+        return -1;
     }
 
     /**

@@ -416,8 +416,22 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_editFieldPrefix_throwsInvalidFieldMessage() {
+        ResumakeException exception = assertThrows(ResumakeException.class, () -> Parser.parse(
+                "edit 1 /roleplay Manager"));
+        assertEquals("\"/roleplay\" is not a valid field. Please use /role, /tech, /from, and /to only.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void parse_projectDuplicateRoleField_throwsException() {
+        assertThrows(ResumakeException.class, () -> Parser.parse(
+                "project My /role Weird Project /role Dev /tech Java /from 2026-01 /to 2026-03"));
+    }
+
+    @Test
     public void parse_editbulletBlankNewBullet_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> Parser.parse("editbullet 1 1 /   "));
+        assertThrows(ResumakeException.class, () -> Parser.parse("editbullet 1 1 /   "));
     }
 
     @Test
@@ -448,22 +462,22 @@ public class ParserTest {
 
     @Test
     public void parse_editbulletZeroRecordIndex_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> Parser.parse("editbullet 0 1 / updated bullet"));
+        assertThrows(ResumakeException.class, () -> Parser.parse("editbullet 0 1 / updated bullet"));
     }
 
     @Test
     public void parse_editbulletNegativeRecordIndex_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> Parser.parse("editbullet -1 1 / updated bullet"));
+        assertThrows(ResumakeException.class, () -> Parser.parse("editbullet -1 1 / updated bullet"));
     }
 
     @Test
     public void parse_editbulletZeroBulletIndex_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> Parser.parse("editbullet 1 0 / updated bullet"));
+        assertThrows(ResumakeException.class, () -> Parser.parse("editbullet 1 0 / updated bullet"));
     }
 
     @Test
     public void parse_editbulletNegativeBulletIndex_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> Parser.parse("editbullet 1 -1 / updated bullet"));
+        assertThrows(ResumakeException.class, () -> Parser.parse("editbullet 1 -1 / updated bullet"));
     }
 
     @Test

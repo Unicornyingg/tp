@@ -2,118 +2,9 @@
 
 ## Overview
 
-**ResuMake CLI** is a desktop command-line application that helps users manage and structure resume content such as projects, experiences, CCAs, and bullet points. The user interacts with it through CLI commands, and the application is written in Java.
+**ResuMake CLI** is a Java command-line application that helps users manage resume content such as projects, experiences, CCAs, and bullet points. Users interact with the application through text commands, which are parsed into command objects and executed against the resume record list. My contributions centred on the record-viewing and user-profile side of the app — list, show, sort, generate, and edituser — as well as the underlying `User` singleton and skill-tracking system.
 
 Given below are my contributions to the project.
-
----
-
-## New Feature: List Records
-
-**What it does:**  
-Displays all stored records, or filters them by category. Accepts `E` (Experience), `C` (CCA), and `P` (Project) as filter arguments, or shows everything when no filter is given. Records are numbered by their actual position in the full list, so indices remain consistent across filtered and unfiltered views.
-
-**Justification:**  
-Users frequently need to inspect a specific category of records without scrolling through the entire list. Consistent indexing across filtered and unfiltered views is important because other commands such as `show`, `edit`, and `delete` all operate by index — if the displayed index were re-numbered during filtering, users would reference the wrong records.
-
-**Highlights:**
-- Accepts type filters case-insensitively, so `e`, `E`, and `experience` are all treated uniformly.
-- Validates the filter argument and surfaces a clear error message listing the accepted values.
-- Uses actual list-position indices even when only a subset of records is shown, keeping indices consistent with all other commands.
-- Handles the empty-list case with a dedicated message instead of printing an empty block.
-
----
-
-## New Feature: Generate Resume
-
-**What it does:**  
-Produces a structured resume-style output from the user's stored data. It prints the user's personal details (name, phone number, email), then groups all records under their respective section headings (CCA, Experience, Project), displaying each record together with its bullet points. A skills section derived from the user's tracked tech stack is appended at the end.
-
-**Justification:**  
-The core purpose of the application is to help users assemble resume content. Without a way to view everything together in a structured layout, users would have to manually piece records together. The generate command closes that gap by producing output that mirrors a real resume structure in one step.
-
-**Highlights:**
-- Reuses `ShowCommand.showRecordWithBullets()` instead of duplicating display logic, keeping the codebase modular.
-- Groups records by type using the same single-character type identifiers stored internally, avoiding a separate mapping layer.
-- Appends a skills section that aggregates tech tags collected across all records.
-- Produces clean section separators between groups for readability.
-
----
-
-## New Feature: Show Individual Record
-
-**What it does:**  
-Displays a single record selected by its 1-based user-facing index, including all its bullet points. If the record has no bullets, a placeholder message is shown.
-
-**Justification:**  
-Users need to inspect one record in detail, for example to verify its content before editing or to review its bullets. Printing the full list every time would be slow and noisy for users with many records.
-
-**Highlights:**
-- Converts the user-facing 1-based index to a 0-based internal index cleanly in the constructor.
-- Validates bounds before accessing the list and surfaces a clear error without crashing.
-- Exposed `showRecordWithBullets()` as a static utility so `GenerateCommand` can reuse the same display logic.
-- Uses logging to trace invalid access attempts for debugging.
-
----
-
-## New Feature: Sort Records
-
-**What it does:**  
-Sorts all stored records alphabetically by title using a case-insensitive comparator, then confirms to the user that the list has been reordered.
-
-**Justification:**  
-As the number of records grows, finding a specific entry by scanning an unsorted list becomes tedious. Alphabetical ordering makes the collection more predictable and improves the readability of subsequent `list` and `generate` output.
-
-**Highlights:**
-- Uses `Comparator.comparing()` with `String.CASE_INSENSITIVE_ORDER` for a concise and readable implementation.
-- Sorts directly at the `RecordList` level, keeping the command simple and side-effect-free from the caller's perspective.
-- Subsequent commands that rely on list order immediately benefit without any additional steps.
-
----
-
-## New Feature: Edit User Profile (`edituser`)
-
-**What it does:**  
-Allows users to update their personal details, name, phone number, or email, one field at a time.
-
-**Justification:**  
-User details are displayed in the generated resume, so they must be editable after the initial setup.
-
-**Highlights:**
-- Validates the field name at construction time and throws immediately if an unsupported field is given, so invalid commands never reach execution.
-- Shows the current value of the field before prompting so the user knows what they are replacing.
-- Throws a descriptive final error after exhausting all attempts, telling the user how to retry.
-
----
-
-## New Feature: User Profile and Skill Tracking
-
-**What it does:**  
-Maintains the user's personal details (name, phone number, email) as a singleton throughout the session. Tracks which tech skills appear across the user's records via `addSkills()` and `removeSkills()`, and exposes the aggregated skill set for display in the generated resume.
-
-**Justification:**  
-A resume generation tool needs stable user data that persists across commands. Skill tracking avoids requiring the user to maintain a separate skills list — the application derives it automatically from the tech tags already recorded.
-
-**Highlights:**
-- Implemented as a singleton so user data is accessible from anywhere without being passed through every command.
-- Skill counts are reference-counted: adding a skill increments a counter and removing decrements it, so a skill is only dropped when no record references it.
-- Normalises skill strings by stripping surrounding quotation marks (double, curly, and single) before storing them.
-- Input validation for name, number, and email is centralised in `editField()`, keeping the prompt logic and the storage logic consistent.
-
----
-
-## Enhancement: Standardised Error Messages
-
-**What it does:**  
-Unified inconsistent error messages across multiple commands so that the same class of error always produces the same user-facing text. For example, all invalid-index errors now surface the same message regardless of which command triggered them.
-
-**Justification:**  
-Inconsistent error messages confuse users and make the application harder to reason about. Standardisation also makes test assertions more reliable, since tests can check for a single canonical string.
-
-**Highlights:**
-- Standardised invalid-index error text across `DeleteCommand`, `EditBulletCommand`, `MoveBulletCommand`, `EditCommand`, `AddBulletCommand`, and `ShowCommand`.
-- Fixed punctuation inconsistencies (missing periods) in date-range and empty-command errors across `Parser`, `Record`, and `EditCommand`.
-- Unified duplicate blank-bullet error messages across `Record.addBullet()` and `Record.editBullet()`.
 
 ---
 
@@ -125,46 +16,45 @@ Inconsistent error messages confuse users and make the application harder to rea
 
 ### Enhancements Implemented
 
-1. **Consistent list indexing**
-   - Changed `ListCommand` so that filtered results display their actual list-position index rather than a re-numbered sequence.
-   - Benefit: indices shown in `list` always match what other commands such as `show`, `edit`, and `delete` expect.
+1. **List records with optional type filter (`list`)** — Displays all records or filters by `E`, `C`, or `P`. Records are shown with their actual list-position index rather than a re-numbered sequence, so the index is always consistent with what `show`, `edit`, and `delete` expect. Accepts the filter case-insensitively and validates it with a clear error if an unsupported value is given.
 
-2. **EditUser retry loop**
-   - Extended `EditUserCommand` to retry invalid input up to four times with a decreasing-attempts counter displayed after each failure.
-   - Benefit: users are not immediately dropped out of the command on a formatting mistake.
+2. **Show individual record (`show`)** — Displays a single record by 1-based index together with all its bullet points (or a placeholder if there are none). Validates bounds before access, converts user-facing indices to internal 0-based indices in the constructor, and exposes `showRecordWithBullets()` as a static utility so `GenerateCommand` can reuse the same display logic without duplication.
 
-3. **Standardised error messages**
-   - Unified invalid-index messages and punctuation across six command files and `Record`.
-   - Benefit: consistent user-facing text and more reliable test assertions.
+3. **Generate resume (`generate`)** — Produces a structured resume-style output: personal details first, then records grouped by type (CCA / Experience / Project) with bullets, then an auto-derived skills section. Reuses `ShowCommand.showRecordWithBullets()` and aggregates skills from the `User` singleton, keeping generation logic thin and modular.
 
-4. **Enabled JVM assertions in Gradle**
-   - Added `-ea` flag to `build.gradle` so assert statements are enforced during tests.
-   - Benefit: assertion violations surface during test runs instead of being silently ignored.
+4. **Sort records (`sort`)** — Sorts all stored records alphabetically by title using a case-insensitive comparator applied directly at the `RecordList` level. All subsequent `list` and `generate` output immediately reflects the new order.
 
-5. **Comprehensive test coverage**
-   - Wrote and significantly expanded tests in `ListCommandTest`, `ShowCommandTest`, `GenerateCommandTest`, `UserTest`, `SortCommandTest`, and `EditUserCommandTest`.
-   - Covered normal operation, boundary indices, invalid types, empty lists, skill tracking, and retry-loop behaviour.
+5. **Edit user profile (`edituser`)** — Lets users update name, phone number, or email one field at a time. The field name is validated at construction time so a bad field never reaches execution. Shows the current value before prompting so the user knows what they are replacing.
+
+6. **User singleton and reference-counted skill tracking (`User`)** — Maintains the user's personal details as a singleton accessible from anywhere without being threaded through every command. Tech skills are reference-counted via `addSkills()` / `removeSkills()`: a skill is only removed once no record references it. Skill strings are normalised by stripping surrounding quotation marks before storage.
+
+7. **Standardised error messages** — Unified invalid-index error text across `DeleteCommand`, `EditBulletCommand`, `MoveBulletCommand`, `EditCommand`, `AddBulletCommand`, and `ShowCommand`. Fixed punctuation inconsistencies in date-range and empty-command errors in `Parser`, `Record`, and `EditCommand`, and unified duplicate blank-bullet messages in `Record`.
+
+8. **Enabled JVM assertions in Gradle** — Added the `-ea` flag to `build.gradle` so `assert` statements are enforced during test runs instead of being silently skipped.
+
+9. **Comprehensive test coverage** — Wrote and expanded tests in `ListCommandTest`, `ShowCommandTest`, `GenerateCommandTest`, `UserTest`, `SortCommandTest`, and `EditUserCommandTest`, covering normal operation, boundary indices, invalid types, empty lists, skill reference-counting, and retry-loop behaviour.
 
 ### Contributions to the User Guide (UG)
 
 - Documented the `list`, `show`, `sort`, `generate`, and `edituser` commands with usage examples and expected output.
-- Clarified valid filter arguments for `list` and the retry behaviour of `edituser`.
+- Clarified valid filter arguments for `list` and the retry behaviour (attempts counter, exit after exhaustion) for `edituser`.
 
 ### Contributions to the Developer Guide (DG)
 
-- Added implementation notes for `ListCommand`, `GenerateCommand`, `ShowCommand`, `SortCommand`, and `EditUserCommand`.
-- Documented the skill-tracking design in `User` and how it integrates with `GenerateCommand`.
+- Added implementation notes for `ListCommand`, `ShowCommand`, `SortCommand`, `GenerateCommand`, and `EditUserCommand`.
+- Documented the skill-tracking design in `User`, including reference-counting and normalisation, and how it integrates with `GenerateCommand`.
 
 ### Contributions to Team-Based Tasks
 
 - Standardised error message conventions across the codebase to reduce user-facing inconsistencies.
-- Reviewed and fixed Gradle build issues to unblock CI and local test runs.
+- Fixed the Gradle `-ea` flag to unblock CI and surface assertion failures during local test runs.
 - Contributed to team discussions on index consistency, command retry behaviour, and error message standards.
 
-### Tools
+### Review/Mentoring Contributions
 
-- Used JUnit to write and expand command and model tests.
-- Used Gradle (`test`, `checkstyleMain`, `checkstyleTest`) for build verification.
-- Used Java `Logger` for tracing command execution and diagnosing issues.
+- Reviewed pull requests and gave feedback on command validation, error handling patterns, and index consistency.
+- Assisted teammates in diagnosing test failures introduced by the list-indexing change.
 
----
+### Contributions Beyond the Project Team
+
+- Reported bugs in other teams' products during the PE dry run.
